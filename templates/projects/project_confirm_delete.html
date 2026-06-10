@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}លុបគម្រោង {{ project.title }} - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card p-5 text-center">
+                <i class="fa-solid fa-triangle-exclamation text-danger fs-1 mb-3"></i>
+                <h3 class="fw-bold mb-2">លុប {{ project.title }}?</h3>
+                <p class="text-muted text-xs mb-4">
+                    តើអ្នកប្រាកដហើយឬនៅ? សកម្មភាពនេះមិនអាចដកហូតបានទេ។
+                    មតិ ការគាំទ្រ និងតំណែងជ្រើសរើសនឹងបាត់បង់ជាអចិន្ត្រៃយ៍ផងដែរ។
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill">បាទ/ចាស លុបគម្រោង</button>
+                        <a href="{% url 'project_detail' project.slug %}" class="btn btn-light rounded-pill">បោះបង់</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

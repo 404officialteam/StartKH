@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}StartKH - ស្វែងរកស្តាតអាប និងគម្រោងបច្ចេកវិទ្យាខ្មែរ{% endblock %}
+
+{% block content %}
+<!-- Hero Header Section -->
+<section class="hero-section text-center mb-5">
+    <div class="container py-3">
+        <h1 class="hero-title mb-3">ស្វែងរករឿងដ៏អស្ចារ្យបន្ទាប់នៅកម្ពុជា 🇰🇭</h1>
+        <p class="lead text-light-50 mb-4 mx-auto" style="max-width: 700px; font-family: 'Kantumruy Pro', sans-serif;">
+            StartKH គឺជាវេទិកាដំបូងគេបង្អស់ ដែលប្រើភាសាខ្មែរ សម្រាប់ស្វែងរក បង្ហាញ និងគាំទ្រ ស្តាតអាប កម្មវិធីទូរស័ព្ទ គេហទំព័រ AI Tool គម្រោងនិស្សិត និងគម្រោងសហគមន៍។
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'project_create' %}" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                <i class="fa-solid fa-rocket me-2"></i> បង្ហាញគម្រោងរបស់អ្នក
+            </a>
+            <a href="#projects-list" class="btn btn-outline-light btn-lg px-4 rounded-pill">
+                ស្វែងរកគម្រោង
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Navigation Section -->
+<div class="container" id="projects-list">
+    <div class="row align-items-center mb-4">
+        <!-- Category Filters -->
+        <div class="col-lg-8 mb-3 mb-lg-0">
+            <div class="d-flex flex-wrap">
+                <a href="{% url 'explore' %}?q={{ query }}&time={{ selected_time }}" class="category-tag {% if not selected_category %}active{% endif %}">
+                    ប្រភេទទាំងអស់
+                </a>
+                {% for category in categories %}
+                    <a href="{% url 'explore' %}?category={{ category.slug }}&q={{ query }}&time={{ selected_time }}" class="category-tag {% if selected_category == category.slug %}active{% endif %}">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Time Filter Dropdown -->
+        <div class="col-lg-4 d-flex justify-content-lg-end align-items-center gap-2">
+            <span class="text-muted text-xs fw-semibold">តម្រៀបដោយ:</span>
+            <div class="dropdown">
+                <button class="btn btn-white border rounded-pill dropdown-toggle text-xs px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-arrow-trend-up text-secondary me-1"></i>
+                    {% if selected_time == 'today' %}ពេញនិយមថ្ងៃនេះ
+                    {% elif selected_time == 'weekly' %}ពេញនិយមសប្តាហ៍នេះ
+                    {% elif selected_time == 'monthly' %}ពេញនិយមខែនេះ
+                    {% else %}ពេញនិយមគ្រប់ពេល
+                    {% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'explore' %}?category={{ selected_category }}&q={{ query }}&time=today">ថ្ងៃនេះ</a></li>
+                    <li><a class="dropdown-item" href="{% url 'explore' %}?category={{ selected_category }}&q={{ query }}&time=weekly">សប្តាហ៍នេះ</a></li>
+                    <li><a class="dropdown-item" href="{% url 'explore' %}?category={{ selected_category }}&q={{ query }}&time=monthly">ខែនេះ</a></li>
+                    <li><a class="dropdown-item" href="{% url 'explore' %}?category={{ selected_category }}&q={{ query }}&time=all">គ្រប់ពេល</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Listing -->
+    <div class="row">
+        <div class="col-lg-8">
+            {% if projects %}
+                {% for project in projects %}
+                    <!-- Entire card is clickable, vote button stops propagation -->
+                    <div class="glass-card project-card d-flex justify-content-between align-items-center mb-3 clickable-card"
+                         onclick="window.location.href='{% url 'project_detail' project.slug %}'"
+                         style="cursor: pointer;"
+                         data-url="{% url 'project_detail' project.slug %}">
+
+                        <div class="d-flex align-items-center gap-3 flex-grow-1 pe-3">
+                            <!-- Logo -->
+                            {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.title }}" class="project-logo flex-shrink-0">
+                            {% else %}
+                                <img src="{% static 'images/default-logo.png' %}" alt="Default Logo" class="project-logo flex-shrink-0">
+                            {% endif %}
+
+                            <!-- Title & Info -->
+                            <div class="min-w-0">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="project-title fw-bold">{{ project.title }}</span>
+                                    {% if project.featured %}
+                                        <span class="badge badge-featured">ពិសេស</span>
+                                    {% endif %}
+                                </div>
+                                <p class="project-tagline mb-1">{{ project.tagline }}</p>
+                                <div class="d-flex align-items-center gap-3 text-xxs text-muted flex-wrap">
+                                    <span>
+                                        <i class="fa-solid fa-tag me-1"></i> {{ project.category.name }}
+                                    </span>
+                                    <span>
+                                        <i class="fa-solid fa-user me-1"></i> ដោយ
+                                        <a href="{% url 'profile_public' project.owner.username %}"
+                                           class="text-decoration-none text-muted fw-semibold"
+                                           onclick="event.stopPropagation()">{{ project.owner.username }}</a>
+                                    </span>
+                                    <span>
+                                        <i class="fa-solid fa-eye me-1"></i> {{ project.views }} ការមើល
+                                    </span>
+                                    <span>
+                                        <i class="fa-solid fa-comments me-1"></i> {{ project.comment_count }} មតិ
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upvote Button — stops click from propagating to the card -->
+                        <div class="flex-shrink-0" onclick="event.stopPropagation()">
+                            <button class="vote-btn {% if project.id in user_votes %}active{% endif %}"
+                                    onclick="toggleVote(this, '{{ project.id }}')"
+                                    title="គាំទ្រ">
+                                <i class="fa-solid fa-caret-up fs-4 mb-1"></i>
+                                <span class="vote-count fw-bold">{{ project.vote_count }}</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5 glass-card mb-4">
+                    <img src="{% static 'images/no-results.png' %}" alt="No projects" style="max-width: 150px; opacity: 0.6;" class="mb-3">
+                    <h4 class="text-muted fw-bold">រកមិនឃើញគម្រោងទេ</h4>
+                    <p class="text-muted small">ក្លាយជាអ្នកដំបូងគេដែលបង្ហាញគម្រោងនៅក្នុងប្រភេទនេះ!</p>
+                    <a href="{% url 'project_create' %}" class="btn btn-secondary rounded-pill btn-sm px-4">បង្ហាញគម្រោង</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Widget -->
+        <div class="col-lg-4">
+            <!-- Launch Banner -->
+            <div class="glass-card p-4 mb-4 text-center" style="background: linear-gradient(135deg, rgba(20, 184, 166, 0.05), rgba(15, 23, 42, 0.05)); border: 1px solid rgba(20, 184, 166, 0.2);">
+                <i class="fa-solid fa-trophy text-warning fs-1 mb-3"></i>
+                <h5 class="fw-bold">បង្ហាញគម្រោងរបស់អ្នក!</h5>
+                <p class="text-muted text-xs mb-3">
+                    មានស្តាតអាប គេហទំព័រ កម្មវិធីទូរស័ព្ទ ឬគម្រោងនិស្សិត? ចែករំលែកទៅកាន់សហគមន៍បច្ចេកវិទ្យាខ្មែរថ្ងៃនេះ!
+                </p>
+                <a href="{% url 'project_create' %}" class="btn btn-primary rounded-pill w-100 fw-bold">
+                    <i class="fa-solid fa-rocket me-1"></i> បង្ហាញនៅ StartKH
+                </a>
+            </div>
+
+            <!-- Ecosystem Widget -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold mb-3"><span class="logo-emoji me-1">🇰🇭</span> មជ្ឈមណ្ឌលបច្ចេកវិទ្យាខ្មែរ</h5>
+                <p class="text-muted text-xs mb-3">
+                    StartKH ផ្តោតលើការលើកស្ទួយអ្នកបង្កើតខ្មែរ ក្រុម Hackathon នៃសាកលវិទ្យាល័យ និងការផ្ទៀងផ្ទាត់គម្រោង Open Source ក្នុងស្រុក។
+                </p>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item bg-transparent px-0 text-xs text-muted d-flex justify-content-between">
+                        <span>ចំនួនគម្រោងបានបង្ហាញ</span>
+                        <span class="fw-bold text-dark">{{ projects|length }}</span>
+                    </div>
+                    <div class="list-group-item bg-transparent px-0 text-xs text-muted d-flex justify-content-between">
+                        <span>អ្នកបង្កើតចុះឈ្មោះ</span>
+                        <span class="fw-bold text-dark">សហគមន៍ខ្មែរ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleVote(element, projectId) {
+    {% if not request.user.is_authenticated %}
+        window.location.href = "{% url 'login' %}";
+        return;
+    {% endif %}
+
+    fetch(`/votes/toggle/${projectId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const countSpan = element.querySelector('.vote-count');
+            countSpan.textContent = data.vote_count;
+            if (data.voted) {
+                element.classList.add('active');
+            } else {
+                element.classList.remove('active');
+            }
+        }
+    })
+    .catch(error => console.error('Error toggling vote:', error));
+}
+
+// Add hover ripple effect on cards
+document.querySelectorAll('.clickable-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-4px)';
+    });
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
+});
+</script>
+{% endblock %}

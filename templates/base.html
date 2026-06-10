@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StartKH - វេទិកាស្វែងរកស្តាតអាប និងគម្រោងបច្ចេកវិទ្យាខ្មែរ{% endblock %}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="ស្វែងរក បង្ហាញ និងគាំទ្រ ស្តាតអាប កម្មវិធីទូរស័ព្ទ គេហទំព័រ AI Tool គម្រោងនិស្សិត និងគម្រោងសហគមន៍ខ្មែរ">
+    <meta name="keywords" content="Cambodia, Startup, Student Project, Khmer founders, Tech, Product Hunt Cambodia, ស្តាតអាប, ខ្មែរ">
+    <meta name="author" content="StartKH">
+    <meta property="og:title" content="StartKH - វេទិកាស្វែងរកស្តាតអាបខ្មែរ">
+    <meta property="og:description" content="វេទិកាដំបូងគេ ប្រើភាសាខ្មែរ សម្រាប់ស្វែងរកគម្រោងបច្ចេកវិទ្យាខ្មែរ">
+    <meta property="og:image" content="{% static 'images/og-image.jpg' %}">
+
+    <!-- Google Font: Inter, Outfit + Khmer font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'explore' %}">
+                <span class="logo-emoji me-2">🇰🇭</span>
+                <span class="logo-text">Start<span class="logo-highlight">KH</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Search Bar -->
+                <form class="d-flex mx-auto my-2 my-lg-0 search-bar-nav" action="{% url 'search' %}" method="GET">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-muted">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input class="form-control border-start-0 ps-0" type="search" name="q"
+                               placeholder="ស្វែងរកស្តាតអាប អ្នកបង្កើត បច្ចេកវិទ្យា..."
+                               value="{{ query|default:'' }}" aria-label="Search">
+                    </div>
+                </form>
+
+                <ul class="navbar-nav align-items-lg-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'explore' %}active{% endif %}" href="{% url 'explore' %}">
+                            <i class="fa-solid fa-fire text-warning me-1"></i> ពេញនិយម
+                        </a>
+                    </li>
+
+                    {% if request.user.is_authenticated %}
+                        <!-- Notifications Bell -->
+                        <li class="nav-item dropdown me-2">
+                            <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-bell"></i>
+                                {% if unread_notifications_count > 0 %}
+                                    <span class="position-absolute top-0 start-75 badge rounded-pill bg-danger" style="font-size: 0.6rem; padding: 3px 5px;">
+                                        {{ unread_notifications_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end notification-dropdown p-2">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                    <span class="fw-bold text-dark">ការជូនដំណឹង</span>
+                                    <a href="{% url 'notifications_list' %}" class="text-xs text-primary text-decoration-none">មើលទាំងអស់</a>
+                                </li>
+                                {% if header_notifications %}
+                                    {% for notif in header_notifications %}
+                                        <li>
+                                            <a class="dropdown-item rounded p-2 mb-1 {% if not notif.is_read %}bg-light-read{% endif %}" href="{% url 'mark_notification_read' notif.id %}">
+                                                <div class="fw-semibold text-xs text-dark">{{ notif.title }}</div>
+                                                <div class="text-muted text-xxs text-truncate" style="max-width: 250px;">{{ notif.message }}</div>
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="text-center py-3 text-muted text-xs">មិនមានការជូនដំណឹងថ្មីទេ</li>
+                                {% endif %}
+                            </ul>
+                        </li>
+
+                        <li class="nav-item me-3">
+                            <a class="btn btn-primary btn-launch-nav" href="{% url 'project_create' %}">
+                                <i class="fa-solid fa-rocket me-1"></i> បង្ហាញគម្រោង
+                            </a>
+                        </li>
+
+                        <!-- User Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{{ request.user.profile.get_avatar_url }}" alt="Avatar" class="avatar-nav me-2">
+                                <span class="d-none d-lg-inline text-light fw-medium">{{ request.user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end profile-dropdown p-2">
+                                <li>
+                                    <a class="dropdown-item rounded py-2" href="{% url 'profile' %}">
+                                        <i class="fa-solid fa-user me-2 text-primary"></i> គណនីរបស់ខ្ញុំ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded py-2" href="{% url 'dashboard' %}">
+                                        <i class="fa-solid fa-gauge-high me-2 text-success"></i> ផ្ទាំងគ្រប់គ្រង
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded py-2" href="{% url 'analytics_dashboard' %}">
+                                        <i class="fa-solid fa-chart-line me-2 text-info"></i> ស្ថិតិ
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item rounded py-2" href="{% url 'project_manage' %}">
+                                        <i class="fa-solid fa-folder me-2 text-warning"></i> គ្រប់គ្រងគម្រោង
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item rounded py-2 text-danger border-0 bg-transparent text-start w-100">
+                                            <i class="fa-solid fa-right-from-bracket me-2"></i> ចាកចេញ
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link text-light me-2" href="{% url 'login' %}">ចូលគណនី</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-teal" href="{% url 'register' %}">ចុះឈ្មោះ</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show custom-alert" role="alert">
+                    <span class="alert-icon">
+                        {% if message.tags == 'success' %}<i class="fa-solid fa-circle-check"></i>
+                        {% elif message.tags == 'danger' or message.tags == 'error' %}<i class="fa-solid fa-triangle-exclamation"></i>
+                        {% else %}<i class="fa-solid fa-circle-info"></i>
+                        {% endif %}
+                    </span>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-4">
+        <div class="container text-center">
+            <p class="mb-1 text-light">Start<span class="logo-highlight">KH</span> © 2026 — វេទិកាស្វែងរកស្តាតអាប និងគម្រោងបច្ចេកវិទ្យាខ្មែរ</p>
+            <p class="text-muted small">គាំទ្រអ្នកបង្កើតខ្មែរ គម្រោងបញ្ចប់ការសិក្សា និង Open Source 🇰🇭</p>
+            <div class="footer-links mt-2">
+                <a href="#" class="text-muted mx-2 text-decoration-none"><i class="fa-brands fa-github me-1"></i>GitHub</a>
+                <a href="#" class="text-muted mx-2 text-decoration-none"><i class="fa-brands fa-telegram me-1"></i>ក្រុម Telegram</a>
+                <a href="#" class="text-muted mx-2 text-decoration-none"><i class="fa-brands fa-facebook me-1"></i>ទំព័រ Facebook</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

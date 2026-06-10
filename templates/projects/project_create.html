@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}បង្ហាញគម្រោង - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-rocket text-secondary fs-1 mb-2"></i>
+                    <h2 class="fw-bold">បង្ហាញគម្រោងរបស់អ្នកនៅ StartKH 🚀</h2>
+                    <p class="text-muted">បំពេញព័ត៌មានខាងក្រោម ដើម្បីចែករំលែកការបង្កើតរបស់អ្នកទៅកាន់សហគមន៍បច្ចេកវិទ្យាខ្មែរ</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.title|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.category|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.tagline|as_crispy_field }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.logo|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.cover_image|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.screenshots|as_crispy_field }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ form.website|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.github|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.video_demo|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">🚀 បង្ហាញគម្រោងឥឡូវ</button>
+                        <a href="{% url 'explore' %}" class="btn btn-link text-muted text-xs">បោះបង់</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

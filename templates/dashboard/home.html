@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Developer Dashboard</h2>
+            <p class="text-muted text-xs">Manage your startups, applications, and recruitment details.</p>
+        </div>
+        <a href="{% url 'project_create' %}" class="btn btn-primary rounded-pill px-4"><i class="fa-solid fa-rocket me-1"></i> Launch Project</a>
+    </div>
+
+    <div class="row">
+        <!-- Left: Applications Received & Sent -->
+        <div class="col-lg-8 mb-4">
+            <!-- Incoming Team Applications -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-inbox text-primary me-2"></i> Recruitment Applications Received</h5>
+                {% if incoming_applications %}
+                    <div class="list-group list-group-flush">
+                        {% for app in incoming_applications %}
+                            <div class="list-group-item bg-transparent px-0 py-3 border-bottom d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ app.user.username }} applied as <span class="text-secondary">{{ app.position.role }}</span></h6>
+                                    <p class="text-xs text-muted mb-1">Project: <a href="{% url 'project_detail' app.position.project.slug %}" class="fw-semibold">{{ app.position.project.title }}</a></p>
+                                    <p class="text-xs bg-light p-2 rounded border mb-2" style="font-style: italic;">"{{ app.message }}"</p>
+                                    <span class="text-xxs text-muted">Applied: {{ app.created_at|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    {% if app.status == 'pending' %}
+                                        <form action="{% url 'update_application_status' app.id %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="accepted">
+                                            <button type="submit" class="btn btn-success btn-xs rounded-pill px-3">Accept</button>
+                                        </form>
+                                        <form action="{% url 'update_application_status' app.id %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" class="btn btn-outline-danger btn-xs rounded-pill px-3">Decline</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="badge {% if app.status == 'accepted' %}bg-success{% else %}bg-danger{% endif %} rounded-pill capitalize">{{ app.status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-xs py-3 text-center">No team applications received yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Sent Recruitment Applications -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-paper-plane text-success me-2"></i> Sent Collaboration Requests</h5>
+                {% if my_applications %}
+                    <div class="list-group list-group-flush">
+                        {% for app in my_applications %}
+                            <div class="list-group-item bg-transparent px-0 py-3 border-bottom d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ app.position.role }} position</h6>
+                                    <p class="text-xs text-muted mb-0">Project: <a href="{% url 'project_detail' app.position.project.slug %}" class="fw-semibold">{{ app.position.project.title }}</a></p>
+                                </div>
+                                <span class="badge {% if app.status == 'accepted' %}bg-success{% elif app.status == 'rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %} rounded-pill capitalize">{{ app.status }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-xs py-3 text-center">You haven't applied to join any project teams yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: My Projects & Notifications -->
+        <div class="col-lg-4">
+            <!-- Mini Project List -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-folder text-warning me-2"></i> My Projects</h5>
+                {% if my_projects %}
+                    <div class="list-group list-group-flush">
+                        {% for p in my_projects %}
+                            <a href="{% url 'project_detail' p.slug %}" class="list-group-item list-group-item-action bg-transparent px-0 py-2 border-bottom text-xs d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">{{ p.title }}</span>
+                                <span class="badge bg-light text-dark border rounded-pill">{{ p.vote_count }} votes</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-xs">No projects launched yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Mini Recent Notifications -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-bell text-secondary me-2"></i> Recent Alerts</h5>
+                {% if recent_notifications %}
+                    <div class="list-group list-group-flush">
+                        {% for notif in recent_notifications %}
+                            <a href="{% if notif.link %}{% url 'mark_notification_read' notif.id %}{% else %}#{% endif %}" class="list-group-item list-group-item-action bg-transparent px-0 py-2 border-bottom text-xxs {% if not notif.is_read %}fw-bold text-primary{% endif %}">
+                                <div>{{ notif.title }}</div>
+                                <div class="text-muted text-truncate" style="max-width: 250px;">{{ notif.message }}</div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-xs">No recent notifications.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

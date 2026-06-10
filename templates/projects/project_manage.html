@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}គ្រប់គ្រងគម្រោង - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">គម្រោងដែលខ្ញុំបានបង្ហាញ</h2>
+            <p class="text-muted text-xs">តាមដាន កែប្រែ ឬលុបគម្រោងរបស់អ្នកដែលបានចុះឈ្មោះនៅ StartKH</p>
+        </div>
+        <a href="{% url 'project_create' %}" class="btn btn-primary rounded-pill px-4">
+            <i class="fa-solid fa-rocket me-1"></i> បង្ហាញថ្មី
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if projects %}
+                <div class="glass-card p-4">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>គម្រោង</th>
+                                    <th>ស្ថានភាព</th>
+                                    <th>ការមើល</th>
+                                    <th>ការគាំទ្រ</th>
+                                    <th>កាលបរិច្ឆេទ</th>
+                                    <th class="text-end">សកម្មភាព</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in projects %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="{{ project.logo.url }}" alt="Logo" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                                <div>
+                                                    <a href="{% url 'project_detail' project.slug %}" class="fw-bold text-dark text-decoration-none">{{ project.title }}</a>
+                                                    <div class="text-muted text-xxs">{{ project.category.name }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if project.status == 'approved' %}
+                                                <span class="badge bg-success rounded-pill">អនុម័ត</span>
+                                            {% elif project.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark rounded-pill">រង់ចាំ</span>
+                                            {% else %}
+                                                <span class="badge bg-danger rounded-pill">បដិសេធ</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-xs">{{ project.views }}</td>
+                                        <td class="text-xs">{{ project.vote_count }}</td>
+                                        <td class="text-xs">{{ project.created_at|date:"M d, Y" }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'project_update' project.slug %}" class="btn btn-outline-teal btn-xs rounded-pill px-3 me-2">
+                                                <i class="fa-solid fa-edit"></i> កែ
+                                            </a>
+                                            <a href="{% url 'project_delete' project.slug %}" class="btn btn-outline-danger btn-xs rounded-pill px-3">
+                                                <i class="fa-solid fa-trash"></i> លុប
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5 glass-card">
+                    <i class="fa-solid fa-folder-open text-muted fs-1 mb-3"></i>
+                    <h4 class="fw-bold text-muted">មិនទាន់បង្ហាញគម្រោងណាមួយទេ</h4>
+                    <p class="text-muted text-xs">អ្នកមិនទាន់បង្ហាញស្តាតអាប ឬគម្រោងណាមួយនៅ StartKH ទេ</p>
+                    <a href="{% url 'project_create' %}" class="btn btn-primary rounded-pill px-4 mt-2">បង្ហាញឥឡូវ</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

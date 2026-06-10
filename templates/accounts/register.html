@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}ចុះឈ្មោះ - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <span class="logo-emoji fs-1">🇰🇭</span>
+                    <h3 class="fw-bold mt-2">បង្កើតគណនី</h3>
+                    <p class="text-muted text-xs">ចុះឈ្មោះ StartKH ដើម្បីបង្ហាញ ឡូត និងគាំទ្រគម្រោងខ្មែរ</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">ចុះឈ្មោះ</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3 text-xs">
+                    <span class="text-muted">មានគណនីរួចហើយ?</span>
+                    <a href="{% url 'login' %}" class="text-secondary fw-semibold text-decoration-none ms-1">ចូលគណនី</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

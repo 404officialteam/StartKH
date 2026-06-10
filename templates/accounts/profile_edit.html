@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-user-edit text-secondary fs-1 mb-2"></i>
+                    <h2 class="fw-bold">Update Profile Info</h2>
+                    <p class="text-muted">Fill out your profile bio, skills, and social details below.</p>
+                </div>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Account Details</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ u_form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ u_form.last_name|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        {{ u_form.email|as_crispy_field }}
+                    </div>
+                    
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Profile Details</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ p_form.avatar|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ p_form.cover_image|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ p_form.bio|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ p_form.location|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        {{ p_form.skills|as_crispy_field }}
+                    </div>
+                    
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 mt-4">Social & Contact Links</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ p_form.github|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ p_form.telegram|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ p_form.facebook|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ p_form.linkedin|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">Save Profile</button>
+                        <a href="{% url 'profile' %}" class="btn btn-link text-muted text-xs">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}ការជូនដំណឹង - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0">ការជូនដំណឹង</h2>
+                <span class="badge bg-secondary rounded-pill">{{ notifications|length }} សរុប</span>
+            </div>
+
+            <div class="glass-card p-4">
+                {% if notifications %}
+                    <div class="list-group list-group-flush">
+                        {% for notif in notifications %}
+                            <div class="list-group-item bg-transparent px-0 py-3 border-bottom d-flex justify-content-between align-items-start {% if not notif.is_read %}bg-light-read rounded px-2{% endif %}">
+                                <div>
+                                    <h6 class="fw-bold mb-1 {% if not notif.is_read %}text-primary{% endif %}">{{ notif.title }}</h6>
+                                    <p class="text-xs text-muted mb-2">{{ notif.message }}</p>
+                                    <span class="text-xxs text-muted">{{ notif.created_at|timesince }} មុន</span>
+                                </div>
+                                {% if notif.link %}
+                                    <a href="{% url 'mark_notification_read' notif.id %}" class="btn btn-outline-teal btn-xs rounded-pill">មើល</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-bell-slash text-muted fs-1 mb-3"></i>
+                        <h5 class="text-muted fw-bold">ទទួលបានពេញលេញ!</h5>
+                        <p class="text-muted text-xs">មិនមានការជូនដំណឹងថ្មីឥឡូវនេះទេ</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}ចូលគណនី - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <span class="logo-emoji fs-1">🇰🇭</span>
+                    <h3 class="fw-bold mt-2">សូមស្វាគមន៍វិញ</h3>
+                    <p class="text-muted text-xs">ចូលគណនី StartKH របស់អ្នក</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">ចូលគណនី</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3 text-xs">
+                    <a href="{% url 'password_reset' %}" class="text-muted text-decoration-none">ភ្លេចពាក្យសម្ងាត់?</a>
+                </div>
+                <div class="text-center mt-2 text-xs">
+                    <span class="text-muted">មិនទាន់មានគណនីទេ?</span>
+                    <a href="{% url 'register' %}" class="text-secondary fw-semibold text-decoration-none ms-1">ចុះឈ្មោះឥឡូវ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

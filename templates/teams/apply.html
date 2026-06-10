@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for {{ position.role }} - StartKH{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-file-contract text-secondary fs-1 mb-2"></i>
+                    <h3 class="fw-bold">Apply for Collaboration</h3>
+                    <h5 class="text-primary">{{ position.role }}</h5>
+                    <p class="text-muted text-xs">Project: <a href="{% url 'project_detail' position.project.slug %}" class="fw-semibold">{{ position.project.title }}</a></p>
+                </div>
+                
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <h6 class="fw-bold text-xs mb-1">Role Description:</h6>
+                    <p class="text-muted text-xs mb-0">{{ position.description }}</p>
+                </div>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold">Cover Message / Pitch</label>
+                        <textarea name="message" class="form-control text-xs" rows="4" placeholder="Explain why you are interested and what relevant skills or experience you have..." required></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill">Submit Application</button>
+                        <a href="{% url 'project_detail' position.project.slug %}" class="btn btn-link text-muted text-xs">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
