@@ -7,9 +7,12 @@ from django.db.backends.base.base import BaseDatabaseWrapper
 BaseDatabaseWrapper.check_database_version_supported = lambda self: None
 
 # Disable RETURNING clause for older MariaDB/MySQL versions
-from django.db.backends.mysql.features import DatabaseFeatures
-DatabaseFeatures.can_return_columns_from_insert = False
-DatabaseFeatures.can_return_rows_from_bulk_insert = False
+try:
+    from django.db.backends.mysql.features import DatabaseFeatures
+    DatabaseFeatures.can_return_columns_from_insert = False
+    DatabaseFeatures.can_return_rows_from_bulk_insert = False
+except ImportError:
+    pass  # MySQL backend not available (e.g., using PostgreSQL in production)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
