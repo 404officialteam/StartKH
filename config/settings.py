@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from pathlib import Path
 
 # Monkeypatch to bypass MariaDB version check for older XAMPP versions
@@ -15,12 +16,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1%opyo8#8#wmcdehov%*dkxn-4_&el+o6l)dk*o%vlletf_chz'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-1%opyo8#8#wmcdehov%*dkxn-4_&el+o6l)dk*o%vlletf_chz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -55,6 +56,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise static files handler
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,37 +87,47 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
-# Use MySQL (XAMPP default) with fallback to SQLite to prevent failure if MySQL is down
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'startkh',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        }
-    }
-}
+# If DATABASE_URL is set in environment (Render, Railway, etc.), use it.
+# Otherwise, fall back to local MySQL (XAMPP default) with fallback to SQLite.
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Add fallback to SQLite if MySQL connection fails or database startkh doesn't exist yet
-# (Useful for developer setup if XAMPP isn't configured/running right away)
-try:
-    import MySQLdb
-    conn = MySQLdb.connect(host="127.0.0.1", user="root", passwd="", port=3306)
-    cursor = conn.cursor()
-    cursor.execute("CREATE DATABASE IF NOT EXISTS startkh CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
-    conn.close()
-except Exception as e:
-    print(f"MySQL connection failed: {e}. Falling back to SQLite3 database for development.")
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'startkh',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            }
         }
     }
+
+    try:
+        import MySQLdb
+        conn = MySQLdb.connect(host="127.0.0.1", user="root", passwd="", port=3306)
+        cursor = conn.cursor()
+        cursor.execute("CREATE DATABASE IF NOT EXISTS startkh CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+        conn.close()
+    except Exception as e:
+        print(f"MySQL connection failed: {e}. Falling back to SQLite3 database for development.")
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -145,6 +157,16 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise storage configuration
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Media Files (User uploads)
 MEDIA_URL = '/media/'
